@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tıp Fakültesi Tabu</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app" aria-labelledby="app-title">
+      <section class="hero">
+        <p class="eyebrow">Türkçe oyun başlangıcı</p>
+        <h1 id="app-title">Tıp Fakültesi Tabu</h1>
+        <p class="intro">
+          Anatomi, fizyoloji, klinik bilimler ve kampüs yaşamından seçilmiş kartlarla
+          sınıfta, kulüpte veya arkadaş grubunda hızlıca Tabu oynayın.
+        </p>
+      </section>
+
+      <section class="panel setup" aria-label="Oyun ayarları">
+        <label for="team-a">1. takım</label>
+        <input id="team-a" value="Kadavra Ekibi" maxlength="24" />
+
+        <label for="team-b">2. takım</label>
+        <input id="team-b" value="Steteskop Tayfa" maxlength="24" />
+
+        <label for="round-seconds">Tur süresi</label>
+        <select id="round-seconds">
+          <option value="45">45 saniye</option>
+          <option value="60" selected>60 saniye</option>
+          <option value="90">90 saniye</option>
+        </select>
+
+        <button id="start-button" class="primary">Oyunu başlat</button>
+      </section>
+
+      <section class="panel scoreboard" aria-live="polite">
+        <article>
+          <span id="team-a-name">Kadavra Ekibi</span>
+          <strong id="team-a-score">0</strong>
+        </article>
+        <article>
+          <span id="team-b-name">Steteskop Tayfa</span>
+          <strong id="team-b-score">0</strong>
+        </article>
+      </section>
+
+      <section class="panel game-card" aria-label="Tabu kartı">
+        <div class="turn-line">
+          <span><strong id="round-label">1. Tur</strong> · Sıradaki takım: <strong id="active-team">Kadavra Ekibi</strong></span>
+          <span class="timer" id="timer">60</span>
+        </div>
+
+        <div class="turn-stats" aria-live="polite">
+          <span>Doğru: <strong id="turn-correct">0</strong></span>
+          <span>Tabu: <strong id="turn-taboo">0</strong></span>
+          <span>Pas: <strong id="turn-pass">0</strong></span>
+          <span>Tur puanı: <strong id="turn-score">0</strong></span>
+        </div>
+
+        <div class="card">
+          <p class="card-label">Anlatılacak kelime</p>
+          <h2 id="target-word">Hazır mısınız?</h2>
+          <ul id="forbidden-list" class="forbidden-list">
+            <li>Başlat düğmesine basın</li>
+          </ul>
+        </div>
+
+        <div class="actions">
+          <button id="correct-button" disabled>Doğru (+1)</button>
+          <button id="taboo-button" disabled>Tabu (-1)</button>
+          <button id="pass-button" disabled>Pas</button>
+          <button id="finish-turn-button" disabled>Turu bitir</button>
+        </div>
+      </section>
+
+      <section class="panel results" aria-labelledby="results-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Tur takibi</p>
+            <h2 id="results-title">Tur sonuçları</h2>
+          </div>
+          <button id="reset-game-button" class="secondary">Oyunu sıfırla</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Tur</th>
+                <th>Takım</th>
+                <th>Doğru</th>
+                <th>Tabu</th>
+                <th>Pas</th>
+                <th>Puan</th>
+              </tr>
+            </thead>
+            <tbody id="round-history">
+              <tr>
+                <td colspan="6">Henüz tamamlanan tur yok.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="panel admin" aria-labelledby="admin-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Admin paneli</p>
+            <h2 id="admin-title">Kart ekle ve düzenle</h2>
+          </div>
+          <button id="reset-cards-button" class="secondary">Kartları varsayılana döndür</button>
+        </div>
+
+        <form id="card-form" class="card-form">
+          <input type="hidden" id="editing-card-id" />
+
+          <label for="card-word">Ana kelime</label>
+          <input id="card-word" placeholder="Örn. Histoloji" required maxlength="40" />
+
+          <label for="card-forbidden">Yasak kelimeler</label>
+          <textarea
+            id="card-forbidden"
+            placeholder="Virgülle ayırın: Doku, Mikroskop, Preparat, Boyama, Lam"
+            required
+          ></textarea>
+
+          <div class="form-actions">
+            <button type="submit" class="primary" id="save-card-button">Kartı ekle</button>
+            <button type="button" id="cancel-edit-button" class="secondary" hidden>Vazgeç</button>
+          </div>
+          <p class="hint">Her kart için en az 1, en fazla 5 yasak kelime girin. Kartlar tarayıcıda saklanır.</p>
+        </form>
+
+        <div class="card-list" id="card-list" aria-live="polite"></div>
+      </section>
+
+      <section class="panel rules">
+        <h2>Nasıl oynanır?</h2>
+        <ol>
+          <li>Anlatıcı ekrandaki ana kelimeyi takımına anlatır.</li>
+          <li>Listedeki yasak kelimeler ve bunların ekleri kullanılamaz.</li>
+          <li>Doğru cevap +1, tabu kelime kullanımı -1 puandır; pas puan değiştirmez.</li>
+          <li>Süre bitince tur sonucu kaydedilir ve sıra diğer takıma geçer.</li>
+          <li>İki takım da oynayınca yeni oyun turuna geçilir: 1. Tur, 2. Tur gibi.</li>
+        </ol>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
