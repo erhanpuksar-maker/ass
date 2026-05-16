@@ -1,11 +1,22 @@
 const { DEFAULT_CARDS, DEFAULT_SETTINGS, cloneData, loadCards, saveCards, loadSettings, saveSettings } = window.TabuData;
 
+const ADMIN_USERNAME = "admin";
+const ADMIN_PASSWORD = "admin";
+const ADMIN_SESSION_KEY = "tip-fakultesi-tabu-admin-giris";
+
 const state = {
   cards: loadCards(),
   settings: loadSettings(),
 };
 
 const elements = {
+  loginPanel: document.querySelector("#login-panel"),
+  loginForm: document.querySelector("#login-form"),
+  adminContent: document.querySelector("#admin-content"),
+  username: document.querySelector("#admin-username"),
+  password: document.querySelector("#admin-password"),
+  loginMessage: document.querySelector("#login-message"),
+  logout: document.querySelector("#logout-button"),
   settingsForm: document.querySelector("#settings-form"),
   roundSeconds: document.querySelector("#round-seconds"),
   correctPoints: document.querySelector("#correct-points"),
@@ -22,6 +33,41 @@ const elements = {
   resetCards: document.querySelector("#reset-cards-button"),
   cardList: document.querySelector("#card-list"),
 };
+
+function isAdminLoggedIn() {
+  return sessionStorage.getItem(ADMIN_SESSION_KEY) === "true";
+}
+
+function renderAuthState() {
+  const isLoggedIn = isAdminLoggedIn();
+  elements.loginPanel.hidden = isLoggedIn;
+  elements.adminContent.hidden = !isLoggedIn;
+  if (isLoggedIn) {
+    renderSettings();
+    renderCardList();
+  }
+}
+
+function handleLogin(event) {
+  event.preventDefault();
+  const username = elements.username.value.trim();
+  const password = elements.password.value;
+
+  if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+    sessionStorage.setItem(ADMIN_SESSION_KEY, "true");
+    elements.loginForm.reset();
+    elements.loginMessage.textContent = "Giriş başarılı.";
+    renderAuthState();
+    return;
+  }
+
+  elements.loginMessage.textContent = "Kullanıcı adı veya şifre hatalı. Kullanıcı adı: admin · Şifre: admin";
+}
+
+function handleLogout() {
+  sessionStorage.removeItem(ADMIN_SESSION_KEY);
+  renderAuthState();
+}
 
 function parseForbiddenWords(value) {
   return value
@@ -162,11 +208,12 @@ function resetSettings() {
   showSettingsMessage("Varsayılan ayarlar yüklendi.");
 }
 
+elements.loginForm.addEventListener("submit", handleLogin);
+elements.logout.addEventListener("click", handleLogout);
 elements.settingsForm.addEventListener("submit", saveAdminSettings);
 elements.resetSettings.addEventListener("click", resetSettings);
 elements.form.addEventListener("submit", upsertCard);
 elements.cancelEdit.addEventListener("click", stopEditingCard);
 elements.resetCards.addEventListener("click", resetCards);
 
-renderSettings();
-renderCardList();
+renderAuthState();

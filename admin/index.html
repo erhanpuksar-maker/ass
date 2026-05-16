@@ -18,8 +18,29 @@
         <p class="intro">Kartları, ceza puanını, pas hakkını ve süreyi buradan yönet.</p>
       </header>
 
-      <section class="admin-grid">
-        <form id="settings-form" class="compact-card admin-panel" aria-labelledby="settings-title">
+      <section id="login-panel" class="compact-card login-panel" aria-labelledby="login-title">
+        <p class="eyebrow">Güvenli giriş</p>
+        <h2 id="login-title">Admin girişi</h2>
+        <form id="login-form" class="login-form">
+          <label for="admin-username">Kullanıcı adı</label>
+          <input id="admin-username" autocomplete="username" required />
+
+          <label for="admin-password">Şifre</label>
+          <input id="admin-password" type="password" autocomplete="current-password" required />
+
+          <button class="primary" type="submit">Giriş yap</button>
+          <p id="login-message" class="hint" aria-live="polite">Kullanıcı adı: admin · Şifre: admin</p>
+        </form>
+      </section>
+
+      <div id="admin-content" hidden>
+        <div class="admin-toolbar">
+          <span class="summary-chip">Admin oturumu açık</span>
+          <button id="logout-button" class="secondary" type="button">Çıkış yap</button>
+        </div>
+
+        <section class="admin-grid">
+          <form id="settings-form" class="compact-card admin-panel" aria-labelledby="settings-title">
           <p class="eyebrow">Oyun ayarları</p>
           <h2 id="settings-title">Kurallar</h2>
 
@@ -72,16 +93,17 @@
         </form>
       </section>
 
-      <section class="compact-card card-library" aria-labelledby="library-title">
-        <div class="section-heading">
-          <div>
-            <p class="eyebrow">Kart kütüphanesi</p>
-            <h2 id="library-title">Kayıtlı kartlar</h2>
+        <section class="compact-card card-library" aria-labelledby="library-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Kart kütüphanesi</p>
+              <h2 id="library-title">Kayıtlı kartlar</h2>
+            </div>
+            <button id="reset-cards-button" class="secondary" type="button">Kartları varsayılana döndür</button>
           </div>
-          <button id="reset-cards-button" class="secondary" type="button">Kartları varsayılana döndür</button>
-        </div>
-        <div id="card-list" class="card-list" aria-live="polite"></div>
-      </section>
+          <div id="card-list" class="card-list" aria-live="polite"></div>
+        </section>
+      </div>
     </main>
 
     <script src="../data.js"></script>

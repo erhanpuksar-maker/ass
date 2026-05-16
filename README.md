@@ -15,8 +15,11 @@ Türkçe, tarayıcıda çalışan, tıp fakültesi temalı Tabu oyunudur. Mobild
 
 Admin paneline `/admin` yolundan ulaşılır. Yerelde test ederken `admin/index.html` dosyasını açabilir veya statik sunucuda `http://localhost:4173/admin/` adresine gidebilirsiniz.
 
+Admin paneline giriş için kullanıcı adı `admin`, şifre `admin` olarak ayarlandı.
+
 Admin panelinde şunları yönetebilirsiniz:
 
+- Sisteme hazır eklenmiş 100 tıp temalı Tabu kartı.
 - Ana kelime ve yasak kelimelerden oluşan Tabu kartları.
 - Doğru cevabın kaç puan yazacağı.
 - Tabu yapmanın kaç ceza puanı yazacağı.
