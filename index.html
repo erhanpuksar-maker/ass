@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Tıp Fakültesi Tabu</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-labelledby="app-title">
+      <header class="hero compact-card">
+        <nav class="topbar" aria-label="Üst menü">
+          <span class="brand-pill">🩺 MedTabu</span>
+          <a class="admin-link" href="admin/">Admin paneli</a>
+        </nav>
+        <p class="eyebrow">Türkçe · Tıp fakültesi oyunu</p>
+        <h1 id="app-title">Tıp Fakültesi Tabu</h1>
+        <p class="intro">Takımları yaz, oyunu başlat, süre bitince tur sonuçlarını tek ekranda gör.</p>
+      </header>
+
+      <section id="setup-screen" class="compact-card setup-screen" aria-labelledby="setup-title">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Başlangıç</p>
+            <h2 id="setup-title">Takımları hazırla</h2>
+          </div>
+          <span id="settings-summary" class="summary-chip"></span>
+        </div>
+
+        <div id="team-list" class="team-list" aria-live="polite"></div>
+        <div class="setup-actions">
+          <button id="add-team-button" class="secondary" type="button">+ Takım ekle</button>
+          <button id="start-game-button" class="primary" type="button">Oyuna başla</button>
+        </div>
+        <p class="hint">Varsayılan olarak 1 takım gelir. İstersen + butonuyla 2, 3 veya daha fazla takım ekleyebilirsin.</p>
+      </section>
+
+      <section id="game-screen" class="game-screen" aria-label="Oyun ekranı" hidden>
+        <div class="game-grid">
+          <section class="compact-card play-panel" aria-label="Tabu kartı">
+            <div class="turn-line">
+              <span><strong id="round-label">1. Tur</strong> · Sıradaki: <strong id="active-team">Kadavra Ekibi</strong></span>
+              <div class="turn-controls">
+                <button id="start-turn-button" class="primary" type="button">Turu başlat</button>
+                <span class="timer" id="timer">60</span>
+              </div>
+            </div>
+
+            <div class="turn-stats" aria-live="polite">
+              <span>Doğru <strong id="turn-correct">0</strong></span>
+              <span>Tabu <strong id="turn-taboo">0</strong></span>
+              <span>Pas <strong id="turn-pass">0</strong>/<strong id="pass-limit">3</strong></span>
+              <span>Puan <strong id="turn-score">0</strong></span>
+            </div>
+
+            <article class="tabu-card">
+              <p class="card-label">Anlatılacak kelime</p>
+              <h2 id="target-word">Hazır mısınız?</h2>
+              <ul id="forbidden-list" class="forbidden-list">
+                <li>Başlat düğmesine basın</li>
+              </ul>
+            </article>
+
+            <div class="actions">
+              <button id="correct-button" type="button">Doğru</button>
+              <button id="taboo-button" type="button">Tabu</button>
+              <button id="pass-button" type="button">Pas</button>
+              <button id="finish-turn-button" class="secondary" type="button">Turu bitir</button>
+            </div>
+          </section>
+
+          <aside class="side-stack">
+            <section class="compact-card scoreboard-card" aria-labelledby="scores-title">
+              <div class="mini-heading">
+                <h2 id="scores-title">Skorlar</h2>
+                <button id="reset-game-button" class="text-button" type="button">Sıfırla</button>
+              </div>
+              <div id="scoreboard" class="scoreboard" aria-live="polite"></div>
+            </section>
+
+            <section class="compact-card results-card" aria-labelledby="results-title">
+              <h2 id="results-title">Tur sonuçları</h2>
+              <div id="round-history" class="round-history" aria-live="polite">
+                <p class="empty-state">Henüz tamamlanan tur yok.</p>
+              </div>
+            </section>
+          </aside>
+        </div>
+      </section>
+    </main>
+
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

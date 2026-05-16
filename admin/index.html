@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Admin · Tıp Fakültesi Tabu</title>
+    <link rel="stylesheet" href="../styles.css" />
+  </head>
+  <body>
+    <main class="app-shell admin-shell" aria-labelledby="admin-title">
+      <header class="hero compact-card admin-hero">
+        <nav class="topbar" aria-label="Üst menü">
+          <span class="brand-pill">⚙️ Admin</span>
+          <a class="admin-link" href="../">Oyuna dön</a>
+        </nav>
+        <p class="eyebrow">siteadresi.com/admin</p>
+        <h1 id="admin-title">Admin Paneli</h1>
+        <p class="intro">Kartları, ceza puanını, pas hakkını ve süreyi buradan yönet.</p>
+      </header>
+
+      <section id="login-panel" class="compact-card login-panel" aria-labelledby="login-title">
+        <p class="eyebrow">Güvenli giriş</p>
+        <h2 id="login-title">Admin girişi</h2>
+        <form id="login-form" class="login-form">
+          <label for="admin-username">Kullanıcı adı</label>
+          <input id="admin-username" autocomplete="username" required />
+
+          <label for="admin-password">Şifre</label>
+          <input id="admin-password" type="password" autocomplete="current-password" required />
+
+          <button class="primary" type="submit">Giriş yap</button>
+          <p id="login-message" class="hint" aria-live="polite">Kullanıcı adı: admin · Şifre: admin</p>
+        </form>
+      </section>
+
+      <div id="admin-content" hidden>
+        <div class="admin-toolbar">
+          <span class="summary-chip">Admin oturumu açık</span>
+          <button id="logout-button" class="secondary" type="button">Çıkış yap</button>
+        </div>
+
+        <section class="admin-grid">
+          <form id="settings-form" class="compact-card admin-panel" aria-labelledby="settings-title">
+          <p class="eyebrow">Oyun ayarları</p>
+          <h2 id="settings-title">Kurallar</h2>
+
+          <div class="settings-grid">
+            <label>
+              Tur süresi (sn)
+              <input id="round-seconds" type="number" min="10" max="300" step="5" required />
+            </label>
+            <label>
+              Doğru puanı
+              <input id="correct-points" type="number" min="1" max="10" required />
+            </label>
+            <label>
+              Tabu cezası
+              <input id="taboo-penalty" type="number" min="0" max="10" required />
+            </label>
+            <label>
+              Pas hakkı
+              <input id="pass-limit" type="number" min="0" max="20" required />
+            </label>
+          </div>
+
+          <div class="form-actions">
+            <button class="primary" type="submit">Ayarları kaydet</button>
+            <button id="reset-settings-button" class="secondary" type="button">Varsayılan ayarlar</button>
+          </div>
+          <p id="settings-message" class="hint" aria-live="polite"></p>
+        </form>
+
+        <form id="card-form" class="compact-card admin-panel" aria-labelledby="card-title">
+          <p class="eyebrow">Kelime yönetimi</p>
+          <h2 id="card-title">Kart ekle / düzenle</h2>
+          <input type="hidden" id="editing-card-id" />
+
+          <label for="card-word">Ana kelime</label>
+          <input id="card-word" placeholder="Örn. Histoloji" required maxlength="40" />
+
+          <label for="card-forbidden">Yasak kelimeler</label>
+          <textarea
+            id="card-forbidden"
+            placeholder="Virgülle ayırın: Doku, Mikroskop, Preparat, Boyama, Lam"
+            required
+          ></textarea>
+
+          <div class="form-actions">
+            <button class="primary" id="save-card-button" type="submit">Kartı ekle</button>
+            <button id="cancel-edit-button" class="secondary" type="button" hidden>Vazgeç</button>
+          </div>
+          <p class="hint">Her kartta en fazla 5 yasak kelime kullanılır.</p>
+        </form>
+      </section>
+
+        <section class="compact-card card-library" aria-labelledby="library-title">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">Kart kütüphanesi</p>
+              <h2 id="library-title">Kayıtlı kartlar</h2>
+            </div>
+            <button id="reset-cards-button" class="secondary" type="button">Kartları varsayılana döndür</button>
+          </div>
+          <div id="card-list" class="card-list" aria-live="polite"></div>
+        </section>
+      </div>
+    </main>
+
+    <script src="../data.js"></script>
+    <script src="admin.js"></script>
+  </body>
+</html>
