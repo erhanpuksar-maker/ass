@@ -1,28 +1,26 @@
 # Tıp Fakültesi Tabu
 
-Türkçe, tarayıcıda çalışan, tıp fakültesi temalı basit bir Tabu oyunudur. Kartlarda anatomi, klinik bilimler, hastane ve fakülte yaşamına ait kelimeler bulunur.
+Türkçe, tarayıcıda çalışan, tıp fakültesi temalı Tabu oyunudur. Mobilde tek ekrana sığacak şekilde önce takım girişi, sonra oyun ekranı gösterilir.
 
-## Kullanım
+## Oyun ekranı
 
-1. Bu dizindeki `index.html` dosyasını modern bir tarayıcıda açın.
-2. Takım adlarını ve tur süresini seçin.
-3. **Oyunu başlat** düğmesine basın.
-4. Anlatıcı ana kelimeyi yasaklı kelimeleri kullanmadan anlatır.
-5. Doğru cevapta **Doğru (+1)**, yasak kelime kullanımında **Tabu (-1)**, kart geçmek için **Pas** düğmesini kullanın.
-6. Süre bitince veya **Turu bitir** düğmesine basınca tur sonucu tabloya kaydedilir.
+1. `index.html` dosyasını modern bir tarayıcıda açın.
+2. Varsayılan olarak 1 takım gelir; **+ Takım ekle** ile istediğiniz kadar takım ekleyin.
+3. **Oyuna başla** düğmesine basınca kısa oyun ekranı açılır.
+4. Her sırada **Turu başlat** düğmesine basarak kartı ve süreyi başlatın.
+5. Doğru cevap, tabu cezası ve pas hakkı admin panelindeki kurallara göre hesaplanır.
+6. Sıra tüm takımlardan geçince oyun otomatik olarak sonraki tura geçer: `1. Tur`, `2. Tur` gibi.
 
 ## Admin paneli
 
-Sayfadaki **Admin paneli** bölümünden yeni kart ekleyebilir, mevcut kartları düzenleyebilir veya silebilirsiniz. Kartlar tarayıcının `localStorage` alanında saklanır; sayfayı yenileseniz bile aynı tarayıcıda kalır.
+Admin paneline `/admin` yolundan ulaşılır. Yerelde test ederken `admin/index.html` dosyasını açabilir veya statik sunucuda `http://localhost:4173/admin/` adresine gidebilirsiniz.
 
-Yasak kelimeleri virgülle ayırarak girin:
+Admin panelinde şunları yönetebilirsiniz:
 
-```text
-Doku, Mikroskop, Preparat, Boyama, Lam
-```
+- Ana kelime ve yasak kelimelerden oluşan Tabu kartları.
+- Doğru cevabın kaç puan yazacağı.
+- Tabu yapmanın kaç ceza puanı yazacağı.
+- Her turdaki pas hakkı.
+- Tur süresi.
 
-Varsayılan 15 kartlık başlangıç destesine dönmek için **Kartları varsayılana döndür** düğmesini kullanın.
-
-## Tur sonuçları
-
-Her takımın tamamladığı tur ayrı satır olarak **Tur sonuçları** tablosunda görünür. İki takım da oynadıktan sonra oyun otomatik olarak bir sonraki tura geçer: `1. Tur`, `2. Tur` gibi.
+Kartlar ve ayarlar tarayıcının `localStorage` alanında saklanır. Aynı tarayıcıda sayfayı yenilediğinizde kaybolmaz.

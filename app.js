@@ -1,102 +1,30 @@
-const defaultCards = [
-  {
-    id: "anatomi",
-    word: "Anatomi",
-    forbidden: ["Vücut", "Kemik", "Kas", "Ders", "Diseksiyon"],
-  },
-  {
-    id: "steteskop",
-    word: "Steteskop",
-    forbidden: ["Dinlemek", "Kalp", "Akciğer", "Doktor", "Muayene"],
-  },
-  {
-    id: "kadaver",
-    word: "Kadaver",
-    forbidden: ["Anatomi", "Laboratuvar", "Beden", "Diseksiyon", "Formalin"],
-  },
-  {
-    id: "hipokrat",
-    word: "Hipokrat",
-    forbidden: ["Yemin", "Hekim", "Etik", "Antik", "Tıp"],
-  },
-  {
-    id: "noroloji",
-    word: "Nöroloji",
-    forbidden: ["Beyin", "Sinir", "Refleks", "Felç", "Klinik"],
-  },
-  {
-    id: "farmakoloji",
-    word: "Farmakoloji",
-    forbidden: ["İlaç", "Doz", "Yan etki", "Reçete", "Etken madde"],
-  },
-  {
-    id: "intorn",
-    word: "İntörn",
-    forbidden: ["Son sınıf", "Hastane", "Nöbet", "Öğrenci", "Servis"],
-  },
-  {
-    id: "patoloji",
-    word: "Patoloji",
-    forbidden: ["Doku", "Mikroskop", "Biyopsi", "Hastalık", "Rapor"],
-  },
-  {
-    id: "kardiyoloji",
-    word: "Kardiyoloji",
-    forbidden: ["Kalp", "EKG", "Damar", "Ritim", "Tansiyon"],
-  },
-  {
-    id: "acil-servis",
-    word: "Acil Servis",
-    forbidden: ["112", "Triyaj", "Hasta", "Ambulans", "Müdahale"],
-  },
-  {
-    id: "mikrobiyoloji",
-    word: "Mikrobiyoloji",
-    forbidden: ["Bakteri", "Virüs", "Kültür", "Antibiyotik", "Laboratuvar"],
-  },
-  {
-    id: "fizyoloji",
-    word: "Fizyoloji",
-    forbidden: ["Fonksiyon", "Sistem", "Organ", "Normal", "Mekanizma"],
-  },
-  {
-    id: "radyoloji",
-    word: "Radyoloji",
-    forbidden: ["Film", "MR", "Tomografi", "Görüntü", "Röntgen"],
-  },
-  {
-    id: "pediatri",
-    word: "Pediatri",
-    forbidden: ["Çocuk", "Aşı", "Bebek", "Büyüme", "Klinik"],
-  },
-  {
-    id: "vize-haftasi",
-    word: "Vize Haftası",
-    forbidden: ["Sınav", "Not", "Çalışmak", "Kütüphane", "Uykusuz"],
-  },
-];
-
-const storageKey = "tip-fakultesi-tabu-kartlari";
+const { loadCards, loadSettings } = window.TabuData;
 
 const state = {
+  setupTeams: ["Kadavra Ekibi"],
+  teams: [],
+  scores: [],
   activeTeamIndex: 0,
   currentRound: 1,
-  scores: [0, 0],
   timerId: null,
   remainingSeconds: 60,
-  deck: [],
-  teams: ["Kadavra Ekibi", "Steteskop Tayfa"],
   cards: loadCards(),
+  settings: loadSettings(),
+  deck: [],
   history: [],
   currentTurn: createEmptyTurn(),
 };
 
 const elements = {
-  teamInputs: [document.querySelector("#team-a"), document.querySelector("#team-b")],
-  teamNames: [document.querySelector("#team-a-name"), document.querySelector("#team-b-name")],
-  scores: [document.querySelector("#team-a-score"), document.querySelector("#team-b-score")],
-  seconds: document.querySelector("#round-seconds"),
-  start: document.querySelector("#start-button"),
+  setupScreen: document.querySelector("#setup-screen"),
+  gameScreen: document.querySelector("#game-screen"),
+  teamList: document.querySelector("#team-list"),
+  addTeam: document.querySelector("#add-team-button"),
+  startGame: document.querySelector("#start-game-button"),
+  settingsSummary: document.querySelector("#settings-summary"),
+  scoreboard: document.querySelector("#scoreboard"),
+  resetGame: document.querySelector("#reset-game-button"),
+  startTurn: document.querySelector("#start-turn-button"),
   finishTurn: document.querySelector("#finish-turn-button"),
   activeTeam: document.querySelector("#active-team"),
   roundLabel: document.querySelector("#round-label"),
@@ -106,20 +34,12 @@ const elements = {
   correct: document.querySelector("#correct-button"),
   taboo: document.querySelector("#taboo-button"),
   pass: document.querySelector("#pass-button"),
+  passLimit: document.querySelector("#pass-limit"),
   turnCorrect: document.querySelector("#turn-correct"),
   turnTaboo: document.querySelector("#turn-taboo"),
   turnPass: document.querySelector("#turn-pass"),
   turnScore: document.querySelector("#turn-score"),
-  resetGame: document.querySelector("#reset-game-button"),
   roundHistory: document.querySelector("#round-history"),
-  form: document.querySelector("#card-form"),
-  editingCardId: document.querySelector("#editing-card-id"),
-  cardWord: document.querySelector("#card-word"),
-  cardForbidden: document.querySelector("#card-forbidden"),
-  saveCard: document.querySelector("#save-card-button"),
-  cancelEdit: document.querySelector("#cancel-edit-button"),
-  resetCards: document.querySelector("#reset-cards-button"),
-  cardList: document.querySelector("#card-list"),
 };
 
 function createEmptyTurn() {
@@ -130,25 +50,12 @@ function createEmptyTurn() {
   };
 }
 
-function loadCards() {
-  try {
-    const savedCards = JSON.parse(localStorage.getItem(storageKey));
-    if (Array.isArray(savedCards) && savedCards.length > 0) {
-      return savedCards;
-    }
-  } catch (error) {
-    console.warn("Kartlar okunamadı, varsayılan deste kullanılacak.", error);
-  }
-
-  return structuredClone(defaultCards);
-}
-
-function saveCards() {
-  localStorage.setItem(storageKey, JSON.stringify(state.cards));
-}
-
 function shuffle(items) {
   return [...items].sort(() => Math.random() - 0.5);
+}
+
+function getTurnScore() {
+  return state.currentTurn.correct * state.settings.correctPoints - state.currentTurn.taboo * state.settings.tabooPenalty;
 }
 
 function resetDeckIfNeeded() {
@@ -157,12 +64,64 @@ function resetDeckIfNeeded() {
   }
 }
 
+function renderSetupTeams() {
+  elements.teamList.replaceChildren(
+    ...state.setupTeams.map((team, index) => {
+      const row = document.createElement("div");
+      row.className = "team-row";
+
+      const label = document.createElement("label");
+      label.htmlFor = `team-${index}`;
+      label.textContent = `${index + 1}. takım`;
+
+      const input = document.createElement("input");
+      input.id = `team-${index}`;
+      input.value = team;
+      input.maxLength = 24;
+      input.placeholder = `${index + 1}. Takım`;
+      input.addEventListener("input", () => {
+        state.setupTeams[index] = input.value;
+      });
+
+      const remove = document.createElement("button");
+      remove.className = "icon-button";
+      remove.type = "button";
+      remove.textContent = "×";
+      remove.ariaLabel = `${index + 1}. takımı sil`;
+      remove.disabled = state.setupTeams.length === 1;
+      remove.addEventListener("click", () => {
+        state.setupTeams.splice(index, 1);
+        renderSetupTeams();
+      });
+
+      row.append(label, input, remove);
+      return row;
+    }),
+  );
+}
+
+function renderSettingsSummary() {
+  elements.settingsSummary.textContent = `${state.settings.roundSeconds} sn · Tabu -${state.settings.tabooPenalty} · ${state.settings.passLimit} pas`;
+}
+
 function renderScoreboard() {
-  state.teams.forEach((team, index) => {
-    elements.teamNames[index].textContent = team;
-    elements.scores[index].textContent = state.scores[index];
-  });
-  elements.activeTeam.textContent = state.teams[state.activeTeamIndex];
+  elements.scoreboard.replaceChildren(
+    ...state.teams.map((team, index) => {
+      const card = document.createElement("article");
+      card.className = index === state.activeTeamIndex ? "score-card active" : "score-card";
+
+      const name = document.createElement("span");
+      name.textContent = team;
+
+      const score = document.createElement("strong");
+      score.textContent = state.scores[index];
+
+      card.append(name, score);
+      return card;
+    }),
+  );
+
+  elements.activeTeam.textContent = state.teams[state.activeTeamIndex] ?? "Takım";
   elements.roundLabel.textContent = `${state.currentRound}. Tur`;
 }
 
@@ -170,13 +129,21 @@ function renderTurnStats() {
   elements.turnCorrect.textContent = state.currentTurn.correct;
   elements.turnTaboo.textContent = state.currentTurn.taboo;
   elements.turnPass.textContent = state.currentTurn.pass;
-  elements.turnScore.textContent = state.currentTurn.correct - state.currentTurn.taboo;
+  elements.passLimit.textContent = state.settings.passLimit;
+  elements.turnScore.textContent = getTurnScore();
+  elements.pass.disabled = state.currentTurn.pass >= state.settings.passLimit;
+}
+
+function createListItem(text) {
+  const item = document.createElement("li");
+  item.textContent = text;
+  return item;
 }
 
 function renderCard() {
   if (state.cards.length === 0) {
     elements.targetWord.textContent = "Kart yok";
-    elements.forbiddenList.replaceChildren(createListItem("Admin panelinden kart ekleyin"));
+    elements.forbiddenList.replaceChildren(createListItem("/admin sayfasından kart ekleyin"));
     setActionButtons(false);
     return;
   }
@@ -187,53 +154,92 @@ function renderCard() {
   elements.forbiddenList.replaceChildren(...card.forbidden.map(createListItem));
 }
 
-function createListItem(text) {
-  const item = document.createElement("li");
-  item.textContent = text;
-  return item;
-}
-
-function setActionButtons(isEnabled) {
-  [elements.correct, elements.taboo, elements.pass, elements.finishTurn].forEach((button) => {
-    button.disabled = !isEnabled;
-  });
-}
-
-function recordTurnResult() {
-  const score = state.currentTurn.correct - state.currentTurn.taboo;
-  state.history.push({
-    round: state.currentRound,
-    team: state.teams[state.activeTeamIndex],
-    correct: state.currentTurn.correct,
-    taboo: state.currentTurn.taboo,
-    pass: state.currentTurn.pass,
-    score,
-  });
-  state.scores[state.activeTeamIndex] += score;
-}
-
-function finishTurn() {
-  if (state.timerId === null) {
+function renderHistory() {
+  if (state.history.length === 0) {
+    elements.roundHistory.innerHTML = '<p class="empty-state">Henüz tamamlanan tur yok.</p>';
     return;
   }
 
+  elements.roundHistory.replaceChildren(
+    ...state.history.slice(-6).reverse().map((result) => {
+      const item = document.createElement("article");
+      item.className = "history-item";
+
+      const titleWrap = document.createElement("div");
+      const round = document.createElement("strong");
+      round.textContent = `${result.round}. Tur`;
+      const team = document.createElement("span");
+      team.textContent = result.team;
+      titleWrap.append(round, team);
+
+      const score = document.createElement("div");
+      score.className = "history-score";
+      score.textContent = `${result.score > 0 ? "+" : ""}${result.score}`;
+
+      const detail = document.createElement("small");
+      detail.textContent = `Doğru ${result.correct} · Tabu ${result.taboo} · Pas ${result.pass}`;
+
+      item.append(titleWrap, score, detail);
+      return item;
+    }),
+  );
+}
+
+function setActionButtons(isEnabled) {
+  [elements.correct, elements.taboo, elements.finishTurn].forEach((button) => {
+    button.disabled = !isEnabled;
+  });
+  elements.pass.disabled = !isEnabled || state.currentTurn.pass >= state.settings.passLimit;
+  elements.startTurn.disabled = isEnabled || state.cards.length === 0;
+}
+
+function setGameStarted() {
+  elements.setupScreen.hidden = true;
+  elements.gameScreen.hidden = false;
+}
+
+function collectTeams() {
+  return state.setupTeams.map((team, index) => team.trim() || `${index + 1}. Takım`);
+}
+
+function startGame() {
+  state.cards = loadCards();
+  state.settings = loadSettings();
+  state.teams = collectTeams();
+  state.scores = state.teams.map(() => 0);
+  state.activeTeamIndex = 0;
+  state.currentRound = 1;
+  state.history = [];
+  state.deck = [];
+  setGameStarted();
+  prepareTurn();
+}
+
+function prepareTurn() {
   clearInterval(state.timerId);
   state.timerId = null;
-  recordTurnResult();
+  state.remainingSeconds = state.settings.roundSeconds;
   state.currentTurn = createEmptyTurn();
+  elements.timer.textContent = state.remainingSeconds;
+  elements.targetWord.textContent = "Tur hazır";
+  elements.forbiddenList.replaceChildren(createListItem("Başlatınca süre ve kart açılır"));
+  renderScoreboard();
+  renderTurnStats();
+  renderHistory();
+  setActionButtons(false);
+  elements.startTurn.textContent = `${state.currentRound}. Tur: ${state.teams[state.activeTeamIndex]} başlat`;
+}
 
-  if (state.activeTeamIndex === 1) {
-    state.currentRound += 1;
-  }
-
-  state.activeTeamIndex = state.activeTeamIndex === 0 ? 1 : 0;
-  state.remainingSeconds = Number(elements.seconds.value);
+function startTurn() {
+  state.remainingSeconds = state.settings.roundSeconds;
+  state.currentTurn = createEmptyTurn();
   elements.timer.textContent = state.remainingSeconds;
   renderScoreboard();
   renderTurnStats();
-  renderRoundHistory();
-  setActionButtons(false);
-  elements.start.textContent = `${state.currentRound}. Tur: ${state.teams[state.activeTeamIndex]} başlat`;
+  renderHistory();
+  renderCard();
+  setActionButtons(state.cards.length > 0);
+  state.timerId = setInterval(tick, 1000);
 }
 
 function tick() {
@@ -244,18 +250,32 @@ function tick() {
   }
 }
 
-function startTurn() {
-  state.teams = elements.teamInputs.map((input, index) => input.value.trim() || `${index + 1}. Takım`);
-  state.remainingSeconds = Number(elements.seconds.value);
-  elements.timer.textContent = state.remainingSeconds;
-  state.currentTurn = createEmptyTurn();
-  renderScoreboard();
-  renderTurnStats();
-  renderCard();
-  setActionButtons(state.cards.length > 0);
+function finishTurn() {
+  if (state.timerId === null) {
+    return;
+  }
+
   clearInterval(state.timerId);
-  state.timerId = setInterval(tick, 1000);
-  elements.start.textContent = "Turu yeniden başlat";
+  state.timerId = null;
+
+  const score = getTurnScore();
+  state.scores[state.activeTeamIndex] += score;
+  state.history.push({
+    round: state.currentRound,
+    team: state.teams[state.activeTeamIndex],
+    correct: state.currentTurn.correct,
+    taboo: state.currentTurn.taboo,
+    pass: state.currentTurn.pass,
+    score,
+  });
+
+  state.activeTeamIndex += 1;
+  if (state.activeTeamIndex >= state.teams.length) {
+    state.activeTeamIndex = 0;
+    state.currentRound += 1;
+  }
+
+  prepareTurn();
 }
 
 function scoreAndNext(type) {
@@ -264,167 +284,27 @@ function scoreAndNext(type) {
   renderCard();
 }
 
-function resetGame() {
+function resetToSetup() {
   clearInterval(state.timerId);
-  state.activeTeamIndex = 0;
-  state.currentRound = 1;
-  state.scores = [0, 0];
   state.timerId = null;
-  state.remainingSeconds = Number(elements.seconds.value);
-  state.deck = [];
-  state.history = [];
   state.currentTurn = createEmptyTurn();
-  elements.timer.textContent = state.remainingSeconds;
-  elements.targetWord.textContent = "Hazır mısınız?";
-  elements.forbiddenList.replaceChildren(createListItem("Başlat düğmesine basın"));
-  elements.start.textContent = "Oyunu başlat";
-  renderScoreboard();
-  renderTurnStats();
-  renderRoundHistory();
-  setActionButtons(false);
+  state.history = [];
+  elements.gameScreen.hidden = true;
+  elements.setupScreen.hidden = false;
+  renderSetupTeams();
 }
 
-function renderRoundHistory() {
-  if (state.history.length === 0) {
-    elements.roundHistory.innerHTML = '<tr><td colspan="6">Henüz tamamlanan tur yok.</td></tr>';
-    return;
-  }
-
-  elements.roundHistory.replaceChildren(
-    ...state.history.map((result) => {
-      const row = document.createElement("tr");
-      [
-        `${result.round}. Tur`,
-        result.team,
-        result.correct,
-        result.taboo,
-        result.pass,
-        result.score > 0 ? `+${result.score}` : result.score,
-      ].forEach((value) => {
-        const cell = document.createElement("td");
-        cell.textContent = value;
-        row.append(cell);
-      });
-      return row;
-    }),
-  );
-}
-
-function parseForbiddenWords(value) {
-  return value
-    .split(",")
-    .map((word) => word.trim())
-    .filter(Boolean)
-    .slice(0, 5);
-}
-
-function createCardId() {
-  return `kart-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function renderCardList() {
-  elements.cardList.replaceChildren(
-    ...state.cards.map((card) => {
-      const item = document.createElement("article");
-      item.className = "admin-card";
-
-      const content = document.createElement("div");
-      const title = document.createElement("h3");
-      title.textContent = card.word;
-      const words = document.createElement("p");
-      words.textContent = card.forbidden.join(", ");
-      content.append(title, words);
-
-      const actions = document.createElement("div");
-      actions.className = "admin-card-actions";
-
-      const edit = document.createElement("button");
-      edit.type = "button";
-      edit.textContent = "Düzenle";
-      edit.addEventListener("click", () => startEditingCard(card.id));
-
-      const remove = document.createElement("button");
-      remove.type = "button";
-      remove.className = "danger";
-      remove.textContent = "Sil";
-      remove.addEventListener("click", () => deleteCard(card.id));
-
-      actions.append(edit, remove);
-      item.append(content, actions);
-      return item;
-    }),
-  );
-}
-
-function startEditingCard(cardId) {
-  const card = state.cards.find(({ id }) => id === cardId);
-  if (!card) {
-    return;
-  }
-
-  elements.editingCardId.value = card.id;
-  elements.cardWord.value = card.word;
-  elements.cardForbidden.value = card.forbidden.join(", ");
-  elements.saveCard.textContent = "Kartı güncelle";
-  elements.cancelEdit.hidden = false;
-  elements.cardWord.focus();
-}
-
-function stopEditingCard() {
-  elements.form.reset();
-  elements.editingCardId.value = "";
-  elements.saveCard.textContent = "Kartı ekle";
-  elements.cancelEdit.hidden = true;
-}
-
-function upsertCard(event) {
-  event.preventDefault();
-  const word = elements.cardWord.value.trim();
-  const forbidden = parseForbiddenWords(elements.cardForbidden.value);
-
-  if (!word || forbidden.length === 0) {
-    return;
-  }
-
-  const editingId = elements.editingCardId.value;
-  if (editingId) {
-    state.cards = state.cards.map((card) => (card.id === editingId ? { ...card, word, forbidden } : card));
-  } else {
-    state.cards.push({ id: createCardId(), word, forbidden });
-  }
-
-  state.deck = [];
-  saveCards();
-  renderCardList();
-  stopEditingCard();
-}
-
-function deleteCard(cardId) {
-  state.cards = state.cards.filter(({ id }) => id !== cardId);
-  state.deck = [];
-  saveCards();
-  renderCardList();
-}
-
-function resetCards() {
-  state.cards = structuredClone(defaultCards);
-  state.deck = [];
-  saveCards();
-  renderCardList();
-  stopEditingCard();
-}
-
-elements.start.addEventListener("click", startTurn);
+elements.addTeam.addEventListener("click", () => {
+  state.setupTeams.push(`${state.setupTeams.length + 1}. Takım`);
+  renderSetupTeams();
+});
+elements.startGame.addEventListener("click", startGame);
+elements.startTurn.addEventListener("click", startTurn);
 elements.finishTurn.addEventListener("click", finishTurn);
 elements.correct.addEventListener("click", () => scoreAndNext("correct"));
 elements.taboo.addEventListener("click", () => scoreAndNext("taboo"));
 elements.pass.addEventListener("click", () => scoreAndNext("pass"));
-elements.resetGame.addEventListener("click", resetGame);
-elements.form.addEventListener("submit", upsertCard);
-elements.cancelEdit.addEventListener("click", stopEditingCard);
-elements.resetCards.addEventListener("click", resetCards);
+elements.resetGame.addEventListener("click", resetToSetup);
 
-renderScoreboard();
-renderTurnStats();
-renderRoundHistory();
-renderCardList();
+renderSetupTeams();
+renderSettingsSummary();
