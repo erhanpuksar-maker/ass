@@ -638,3 +638,98 @@ h2 {
 .forbidden-list li{background:#fff;border-radius:10px;padding:6px 10px;margin:6px 0;border:1px solid #fecdd3}
 #user-panel{margin-bottom:14px}
 @media (max-width:760px){.setup-actions{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}}
+/* Button polish */
+button,
+.primary,
+.secondary,
+.text-button,
+.danger,
+.admin-link,
+.icon-button,
+#correct-button,
+#pass-button,
+#taboo-button {
+  position: relative;
+  isolation: isolate;
+}
+
+button,
+.primary,
+.secondary,
+.danger,
+#correct-button,
+#pass-button,
+#taboo-button,
+.icon-button {
+  border: 1px solid transparent;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+button::after,
+.primary::after,
+.secondary::after,
+.danger::after,
+#correct-button::after,
+#pass-button::after,
+#taboo-button::after,
+.icon-button::after,
+.admin-link::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0));
+  pointer-events: none;
+  z-index: -1;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-3px) scale(1.01);
+  box-shadow: 0 14px 24px rgba(15, 23, 42, 0.18);
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0) scale(0.99);
+}
+
+.primary {
+  border-color: rgba(255, 255, 255, 0.24);
+  background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+}
+
+.secondary {
+  border-color: rgba(2, 132, 199, 0.22);
+  color: #0c4a6e;
+  background: linear-gradient(135deg, #ecfeff, #dbeafe);
+}
+
+#correct-button {
+  border-color: rgba(22, 163, 74, 0.22);
+  background: linear-gradient(135deg, #16a34a, #22c55e);
+}
+
+#taboo-button,
+.danger {
+  border-color: rgba(244, 63, 94, 0.2);
+  background: linear-gradient(135deg, #f43f5e, #fb7185);
+}
+
+#pass-button {
+  border-color: rgba(217, 119, 6, 0.24);
+  color: #7c2d12;
+  background: linear-gradient(135deg, #fef9c3, #fde68a);
+}
+
+.admin-link {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
+}
+
+.icon-button {
+  border-color: rgba(225, 29, 72, 0.2);
+}
+
+.text-button {
+  border-radius: 12px;
+}
