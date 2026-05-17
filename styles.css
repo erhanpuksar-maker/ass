@@ -631,3 +631,10 @@ h2 {
     width: 100%;
   }
 }
+.auth-dialog{border:0;border-radius:20px;padding:0;max-width:420px;width:calc(100% - 24px)}
+.auth-form{padding:20px;background:#fff;display:grid;gap:10px}
+.tabu-card{background:linear-gradient(180deg,#fff,#fee2e2);border:2px solid #fca5a5;border-radius:22px;box-shadow:0 12px 30px rgba(0,0,0,.12);position:relative}
+.tabu-card::before{content:'';position:absolute;inset:8px;border:1px dashed #fb7185;border-radius:16px;pointer-events:none}
+.forbidden-list li{background:#fff;border-radius:10px;padding:6px 10px;margin:6px 0;border:1px solid #fecdd3}
+#user-panel{margin-bottom:14px}
+@media (max-width:760px){.setup-actions{grid-template-columns:1fr}.game-grid{grid-template-columns:1fr}}

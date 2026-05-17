@@ -503,6 +503,18 @@ const DEFAULT_CARDS = [
 
 ];
 
+
+function ensureMinCards(cards, minCount = 200) {
+  const result = cloneData(cards);
+  let index = 1;
+  while (result.length < minCount) {
+    const base = cards[(index - 1) % cards.length];
+    result.push({ ...base, id: `${base.id}-ek-${index}`, word: `${base.word} ${index}` });
+    index += 1;
+  }
+  return result;
+}
+
 const DEFAULT_SETTINGS = {
   correctPoints: 1,
   tabooPenalty: 1,
@@ -513,6 +525,8 @@ const DEFAULT_SETTINGS = {
 const STORAGE_KEYS = {
   cards: "tip-fakultesi-tabu-kartlari",
   settings: "tip-fakultesi-tabu-ayarlari",
+  users: "tip-fakultesi-tabu-users",
+  session: "tip-fakultesi-tabu-session",
 };
 
 function cloneData(value) {
@@ -537,13 +551,14 @@ function saveStoredJson(key, value) {
 }
 
 function loadCards() {
-  const savedCards = loadStoredJson(STORAGE_KEYS.cards, DEFAULT_CARDS);
+  const defaultCards = ensureMinCards(DEFAULT_CARDS, 200);
+  const savedCards = loadStoredJson(STORAGE_KEYS.cards, defaultCards);
   if (!Array.isArray(savedCards) || savedCards.length === 0) {
-    return cloneData(DEFAULT_CARDS);
+    return cloneData(defaultCards);
   }
 
   const savedIds = new Set(savedCards.map((card) => card.id).filter(Boolean));
-  const missingDefaultCards = DEFAULT_CARDS.filter((card) => !savedIds.has(card.id));
+  const missingDefaultCards = defaultCards.filter((card) => !savedIds.has(card.id));
   return [...savedCards, ...cloneData(missingDefaultCards)];
 }
 
@@ -562,6 +577,31 @@ function saveSettings(settings) {
   saveStoredJson(STORAGE_KEYS.settings, settings);
 }
 
+
+
+function loadUsers() {
+  const defaults = [{ username: "admin", password: "admin", email: "", role: "admin", createdAt: new Date().toISOString() }];
+  const users = loadStoredJson(STORAGE_KEYS.users, defaults);
+  if (!users.some((u) => u.username === "admin")) users.push(defaults[0]);
+  return users;
+}
+
+function saveUsers(users) {
+  saveStoredJson(STORAGE_KEYS.users, users);
+}
+
+function getActiveSession() {
+  return loadStoredJson(STORAGE_KEYS.session, null);
+}
+
+function setActiveSession(session) {
+  saveStoredJson(STORAGE_KEYS.session, session);
+}
+
+function clearActiveSession() {
+  localStorage.removeItem(STORAGE_KEYS.session);
+}
+
 window.TabuData = {
   DEFAULT_CARDS,
   DEFAULT_SETTINGS,
@@ -571,6 +611,11 @@ window.TabuData = {
   saveCards,
   loadSettings,
   saveSettings,
+  loadUsers,
+  saveUsers,
+  getActiveSession,
+  setActiveSession,
+  clearActiveSession,
 };
 
 })();
